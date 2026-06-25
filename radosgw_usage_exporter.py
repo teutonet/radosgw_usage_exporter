@@ -214,7 +214,7 @@ class RADOSGWCollector(object):
             "user_metadata": GaugeMetricFamily(
                 "radosgw_user_metadata",
                 "User metadata",
-                labels=["user", "display_name", "email", "storage_class", "store"],
+                labels=["user", "owner", "type", "display_name", "email", "storage_class", "store"],
             ),
             "user_quota_enabled": GaugeMetricFamily(
                 "radosgw_usage_user_quota_enabled",
@@ -494,9 +494,17 @@ class RADOSGWCollector(object):
             user_storage_class = user_info["default_storage_class"]
         else:
             user_storage_class = ""
+        if "account_id" in user_info:
+            user_account_id = user_info["account_id"]
+        else:
+            user_account_id = ""
+        if "type" in user_info:
+            user_type = user_info["type"]
+        else:
+            user_type = ""
 
         self._prometheus_metrics["user_metadata"].add_metric(
-            [user, user_display_name, user_email, user_storage_class, self.store], 1
+            [user, user_account_id, user_type, user_display_name, user_email, user_storage_class, self.store], 1
         )
 
         if "stats" in user_info:
